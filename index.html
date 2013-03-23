@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+<!-- 		<meta name="author" content="">	 -->
+		<title>Cloud player, for the Pi</title>
+		<link rel="stylesheet" href="helium/css/master.css">
+		<style>
+.fileslist {
+	display: block;
+	max-width: 100%;
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+}
+
+.container {
+	padding: 0 !important;
+	/*margin: 0 !important;*/
+}
+
+.fileslist li {
+	list-style-type: none;
+	background: #e0e0e0;
+	padding: 0.5em 0.5em;
+	margin: 0.1em 0;
+	cursor: pointer;
+}
+
+.fileslist li:hover {
+	background-color: #ddd;
+}
+
+.fileslist .dir {
+	font-weight: bold;
+}
+
+.controls, #copyright {
+	margin: 1em 0;
+	text-align: center;
+}
+
+#browser, #playlist {
+	background-color: #eee;
+	padding: 1em;
+}
+
+
+		</style>
+	</head>
+	
+	<body class="responsive fixed-top-bar">
+		<div id="footer-pusher">
+			<div id="page-wrap">	
+		
+				<nav id="page-nav" class="top-bar">
+					
+					<div class="container">
+
+						<div class="row controls">
+								<input type="button" id="addall" value="Play all" />
+								<input type="button" id="next" value="Next" />
+								<input type="button" id="pl" value="Playlist" />
+						</div><!--
+						<div id="nav-branding" class="float-left">
+							<a>Butt Player</a>
+						</div>
+										-->
+					</div><!--end container-->
+				
+				</nav><!--end page-nav-->
+				
+				<header id="page-header">
+					<div class="container">
+
+						<hgroup>
+							
+						</hgroup>			
+
+					</div><!--end container-->
+				</header><!--end page-header-->
+				
+				<div id="page-content">
+					<div class="container">
+					
+						<div class="row controls">
+							<audio id="player" controls autoplay autobuffer>
+								<p>I'm sorry, but your browser is a pain in the butt... Can you switch to Chrome?</p>
+							</audio>
+						</div>
+						
+						<div class="row">
+								<div><ul class="fileslist" id="browser"></ul></div>
+								<div><ul class="fileslist" id="playlist" style="display: none;"></ul></div>
+						</div>
+							
+						</div>
+
+					</div><!--end container-->
+				</div><!--end page-content-->
+			
+			</div><!--end page-wrap-->
+		</div><!--end footer-pusher-->
+		
+		<footer id="page-footer">
+			<div class="container">
+
+				<div class="row" id="copyright">
+            &copy; 2013 WinRAR
+				</div>
+
+			</div><!--end container-->
+		</footer><!--end page-footer-->
+        <script src="js/zepto.min.js"></script>
+	<script>
+var path = "/f/";
+var cache = {};
+
+function load(path)  {
+	var url = path;
+	
+	if (typeof cache[url] != "undefined") {
+		populate(cache[url]);
+		return;
+	}
+	
+	$.ajax({
+		type: "GET",
+		url: url,
+		dataType: "json",
+		success: function(data) {
+			//console.log(data);
+			populate(data);
+			cache[url] = data;
+		}
+	});
+}
+
+function populate(files) {
+	var $b = $('#browser').empty();
+	function add(p, i, f) {
+		//console.log(f);
+		var dir = (f[f.length - 1] == '/');
+		var cl = dir ? "dir" : "file";
+		$('<li></li>').text(f).attr('href', p + f)
+			.addClass(cl).appendTo($b)
+			.click(dir?clickDir:clickFile);
+		};
+	files[1].sort(function(a, b) {
+		a = a.toLowerCase();
+		b = b.toLowerCase();
+		if (a > b) return 1;
+		if (a < b) return -1;
+		return 0;
+	});
+	$b.append(up());
+	//$.each(files[1], add);
+	for (var i = 0; i < files[1].length; i++) {
+		//console.log("adding " + i);
+		add(files[0], i, decodeURIComponent(files[1][i]));
+	}
+}
+function up() {
+	return $('<li class="dir">..</li>').click(function() {
+		load(path);
+	});
+}
+function clickDir(e) {
+	load($(e.target).attr('href'));
+	return false;
+}
+
+function clickFile(e) {
+	addToPlaylist($(e.target));
+	return false;
+}
+
+function addToPlaylist(f) {
+	var $p = $('#playlist');
+	var playnow = ($p.find('li').length == 0);
+	var $d = $('<li></li>').text(f.text()).attr('href', f.attr('href'))
+		.appendTo($p)
+		.click(function(e) { play(e.target); });
+	if (playnow) $d.click();
+}
+
+function addAll() {
+	$('#browser li.file').each(function(i, e) {
+		addToPlaylist($(e));
+	});
+}
+function play(el) {
+	var url = $(el).attr('href');
+	$('#playlist li').removeClass('playing');
+	$(el).addClass('playing')
+	$('#player').attr('src', url);
+}
+
+function next() {
+	var $next = $('#playlist li.playing').next();
+	if ($next.length) play($next);
+}
+
+function togglepl() {
+	$('#playlist').toggle();
+	$('#browser').toggle();
+}
+
+Zepto(function($){
+	load(path);
+	$('#player').bind('ended', next);
+	$('#addall').click(addAll);
+	$('#next').click(next);
+	$('#pl').click(togglepl);
+});
+
+
+	</script>
+	</body>
+</html>

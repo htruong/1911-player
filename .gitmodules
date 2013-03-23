@@ -1,0 +1,3 @@
+[submodule "helium"]
+	path = helium
+	url = git://github.com/cbrauckmuller/helium.git
