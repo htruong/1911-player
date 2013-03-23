@@ -1,10 +1,10 @@
-Butt Minimal Music Player
+1911 Player
 ===
 
 Introduction
 --
 
-Butt minimal player helps you play HTML5 audio on the Raspberry Pi since 2013.
+1911 player -- playing HTML5 audio on the Raspberry Pi since 1911.
 
 Borrowed some javascript code from the [Go HTML5 Player](https://github.com/nf/goplayer) but with less [pain in the butt](https://github.com/panicsteve/cloud-to-butt) so it works with the Pi without bogging it down.
 
@@ -13,7 +13,7 @@ INSTALL
 
 Compile nginx with JSON directory listing here. 
 
-	https://github.com/htruong/nginx
+	https://github.com/htruong/nginx-autoindex
 
 Then do 
 	./configure; make; make install
@@ -26,4 +26,4 @@ Then install it on your Pi. Setup whatever way you want. Then create a music dir
 		autoindex  on;
 	}
 
-Then clone the butt player somewhere accessible, change the path declaration on index.html, and [you're good to go](http://www.youtube.com/watch?feature=player_detailpage&v=Yavx9yxTrsw#t=273s).
+Then clone the 1911 player somewhere accessible, change the path declaration on index.html, and [you're good to go](http://www.youtube.com/watch?feature=player_detailpage&v=Yavx9yxTrsw#t=273s).
