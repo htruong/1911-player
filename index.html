@@ -113,14 +113,14 @@
 			<div class="container">
 
 				<div class="row" id="copyright">
-            <a href="http://github.com/htruong/1911-player">1911 Player</a> &bull; CC 2013 <a href="http://tnhh.net/">WinRAR</a>.
+            <a href="http://github.com/htruong/1911-player">1911 Player</a> &bull; CC 2013-2017 <a href="http://tnhh.net/">Huan Truong</a>.
 				</div>
 
 			</div><!--end container-->
 		</footer><!--end page-footer-->
         <script src="js/zepto.min.js"></script>
 	<script>
-var path = "/f/";
+var path = "/~pi/music";
 var cache = {};
 
 function getQueryVariable(variable) {
@@ -144,7 +144,7 @@ function load(path)  {
 	var url = path;
 	
 	if (typeof cache[url] != "undefined") {
-		populate(cache[url]);
+		populate(cache[url], path);
 		return;
 	}
 	
@@ -154,34 +154,35 @@ function load(path)  {
 		dataType: "json",
 		success: function(data) {
 			//console.log(data);
-			populate(data);
+			populate(data, path);
 			cache[url] = data;
 		}
 	});
 }
 
-function populate(files) {
+function populate(files, basepath) {
 	var $b = $('#browser').empty();
-	function add(p, i, f) {
+	function add(p, i, f, t) {
 		//console.log(f);
-		var dir = (f[f.length - 1] == '/');
+		var dir = (t == "directory");
 		var cl = dir ? "dir" : "file";
-		$('<li></li>').text(f).attr('href', p + f)
+		$('<li></li>').text(f).attr('href', p + '/' + f)
 			.addClass(cl).appendTo($b)
 			.click(dir?clickDir:clickFile);
 		};
-	files[1].sort(function(a, b) {
-		a = a.toLowerCase();
-		b = b.toLowerCase();
+	files.sort(function(a, b) {
+		a = a.name.toLowerCase();
+		b = b.name.toLowerCase();
 		if (a > b) return 1;
 		if (a < b) return -1;
 		return 0;
 	});
+
 	$b.append(up());
-	//$.each(files[1], add);
-	for (var i = 0; i < files[1].length; i++) {
+
+	for (var i = 0; i < files.length; i++) {
 		//console.log("adding " + i);
-		add(files[0], i, decodeURIComponent(files[1][i]));
+		add(basepath, i, files[i].name, files[i].type);
 	}
 }
 function up() {
