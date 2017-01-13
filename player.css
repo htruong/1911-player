@@ -1,0 +1,25 @@
+#audio0 {
+	display: none;
+}
+
+html, 
+body,
+#overlord {
+	width: 100%;
+    height: 100%;
+	color: white;
+	background-color: black;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background-image: url(loa.jpg);
+}
+
+#overlord {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+}

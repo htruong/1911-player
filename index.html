@@ -1,246 +1,56 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<!--[if lte IE 6]><html class="preIE7 preIE8 preIE9"><![endif]-->
+<!--[if IE 7]><html class="preIE8 preIE9"><![endif]-->
+<!--[if IE 8]><html class="preIE9"><![endif]-->
+<!--[if gte IE 9]><!--><html><!--<![endif]-->
+  <head>
+    <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Huan's North Vietnam Propaganda Songs Collection</title>
+  <link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon">
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+  <script src="player.js" type="text/javascript"></script>
+  <script src="defaults.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.2.4/milligram.min.css" type="text/css">
+  <link rel="stylesheet" href="player.css" type="text/css">
+  </head>
+<body>
 
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
-		<meta name="keywords" content="">
-		<meta name="description" content="">
-<!-- 		<meta name="author" content="">	 -->
-		<title>Cloud player, for the Pi</title>
-		<link rel="stylesheet" href="helium/css/master.css">
-		<style>
-.fileslist {
-	display: block;
-	max-width: 100%;
-	overflow: hidden;
-	margin: 0;
-	padding: 0;
+
+<div id="audio0">
+    <audio preload controls id="player">Ur browser does not support HTML5 Audio! Use a modern browser pls.</audio>
+</div>
+<div id="overlord">
+<a class="button" href="#" onclick="return start();" id='startbtn'>5h sáng</a>
+</div>
+
+
+  
+<script type="text/javascript">
+
+var loa = new LoaPhuong(document.getElementById("player"));
+
+
+function changeBackground() {
+    $('#overlord').fadeOut(10000);
 }
 
-.container {
-	padding: 0 !important;
-	/*margin: 0 !important;*/
-}
-
-.fileslist li {
-	list-style-type: none;
-	background: #e0e0e0;
-	padding: 0.5em 0.5em;
-	margin: 0.1em 0;
-	cursor: pointer;
-}
-
-.fileslist li:hover {
-	background-color: #ddd;
-}
-
-.fileslist .dir {
-	font-weight: bold;
-}
-
-.controls, #copyright {
-	margin: 1em 0;
-	text-align: center;
-}
-
-#browser, #playlist {
-	background-color: #eee;
-	padding: 1em;
-}
-
-
-		</style>
-	</head>
-	
-	<body class="responsive fixed-top-bar">
-		<div id="footer-pusher">
-			<div id="page-wrap">	
-		
-				<nav id="page-nav" class="top-bar">
-					
-					<div class="container">
-
-						<div class="row controls">
-								<input type="button" id="addall" value="Play all" />
-								<input type="button" id="next" value="Next" />
-								<input type="button" id="pl" value="Playlist" />
-						</div><!--
-						<div id="nav-branding" class="float-left">
-							<a>Butt Player</a>
-						</div>
-										-->
-					</div><!--end container-->
-				
-				</nav><!--end page-nav-->
-				
-				<header id="page-header">
-					<div class="container">
-
-						<hgroup>
-							
-						</hgroup>			
-
-					</div><!--end container-->
-				</header><!--end page-header-->
-				
-				<div id="page-content">
-					<div class="container">
-					
-						<div class="row controls">
-							<audio id="player" controls autoplay autobuffer>
-								<p>I'm sorry, but your browser is a pain in the butt... Can you switch to Chrome?</p>
-							</audio>
-						</div>
-						
-						<div class="row">
-								<div><ul class="fileslist" id="browser"></ul></div>
-								<div><ul class="fileslist" id="playlist" style="display: none;"></ul></div>
-						</div>
-							
-						</div>
-
-					</div><!--end container-->
-				</div><!--end page-content-->
-			
-			</div><!--end page-wrap-->
-		</div><!--end footer-pusher-->
-		
-		<footer id="page-footer">
-			<div class="container">
-
-				<div class="row" id="copyright">
-            <a href="http://github.com/htruong/1911-player">1911 Player</a> &bull; CC 2013-2017 <a href="http://tnhh.net/">Huan Truong</a>.
-				</div>
-
-			</div><!--end container-->
-		</footer><!--end page-footer-->
-        <script src="js/zepto.min.js"></script>
-	<script>
-var path = "/~pi/music";
-var cache = {};
-
-function getQueryVariable(variable) {
-	var query = window.location.hash;
-	if (query.split("?").length < 2) 
-		return null;
-	
-	var vars = query.split("?")[1].split("&");
-	
-	for (var i=0;i<vars.length;i++) {
-		var pair = vars[i].split("=");
-		if (decodeURI(pair[0]) == variable) {
-			return decodeURI(pair[1]);
-		}
-	}
-	
-	return null;
-}
-
-function load(path)  {
-	var url = path;
-	
-	if (typeof cache[url] != "undefined") {
-		populate(cache[url], path);
-		return;
-	}
-	
-	$.ajax({
-		type: "GET",
-		url: url,
-		dataType: "json",
-		success: function(data) {
-			//console.log(data);
-			populate(data, path);
-			cache[url] = data;
-		}
-	});
-}
-
-function populate(files, basepath) {
-	var $b = $('#browser').empty();
-	function add(p, i, f, t) {
-		//console.log(f);
-		var dir = (t == "directory");
-		var cl = dir ? "dir" : "file";
-		$('<li></li>').text(f).attr('href', p + '/' + f)
-			.addClass(cl).appendTo($b)
-			.click(dir?clickDir:clickFile);
-		};
-	files.sort(function(a, b) {
-		a = a.name.toLowerCase();
-		b = b.name.toLowerCase();
-		if (a > b) return 1;
-		if (a < b) return -1;
-		return 0;
-	});
-
-	$b.append(up());
-
-	for (var i = 0; i < files.length; i++) {
-		//console.log("adding " + i);
-		add(basepath, i, files[i].name, files[i].type);
-	}
-}
-function up() {
-	return $('<li class="dir">..</li>').click(function() {
-		load(path);
-	});
-}
-function clickDir(e) {
-	load($(e.target).attr('href'));
+function start() {
+	loa.play();
+	changeBackground();
 	return false;
 }
 
-function clickFile(e) {
-	addToPlaylist($(e.target));
-	return false;
+function autorun()
+{
+	loa.load(music_path);
 }
 
-function addToPlaylist(f) {
-	var $p = $('#playlist');
-	var playnow = ($p.find('li').length == 0);
-	var $d = $('<li></li>').text(f.text()).attr('href', f.attr('href'))
-		.appendTo($p)
-		.click(function(e) { play(e.target); });
-	if (playnow) $d.click();
-}
+if (document.addEventListener) document.addEventListener("DOMContentLoaded", autorun, false);
+else if (document.attachEvent) document.attachEvent("onreadystatechange", autorun);
+else window.onload = autorun;
 
-function addAll() {
-	$('#browser li.file').each(function(i, e) {
-		addToPlaylist($(e));
-	});
-}
-function play(el) {
-	var url = $(el).attr('href');
-	$('#playlist li').removeClass('playing');
-	$(el).addClass('playing')
-	$('#player').attr('src', url);
-}
-
-function next() {
-	var $next = $('#playlist li.playing').next();
-	if ($next.length) play($next);
-}
-
-function togglepl() {
-	$('#playlist').toggle();
-	$('#browser').toggle();
-}
-
-Zepto(function($){
-	path = getQueryVariable("path") || path;
-	load(path);
-	$('#player').bind('ended', next);
-	$('#addall').click(addAll);
-	$('#next').click(next);
-	$('#pl').click(togglepl);
-});
-
-
-	</script>
-	</body>
+</script>
+  </body>
 </html>
