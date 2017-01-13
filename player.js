@@ -1,9 +1,6 @@
 function LoaPhuong(player) {
 	this.playlist = [];
 	this.player = player;
-	this.player.onended = this.next;
-
-
 
 	this.populate = function(files, basepath) {
 		for (var i = 0; i < files.length; i++) {
@@ -34,9 +31,10 @@ function LoaPhuong(player) {
 	};
 
 	this.next = function() {
-		if (this.playlist.length > 0) {
-			var songid = Math.floor(Math.random() * this.playlist.length);
- 			this.player.src = this.playlist[songid];
+		var playlist = this.playlist;
+		if (playlist.length > 0) {
+			var songid = Math.floor(Math.random() * playlist.length);
+ 			this.player.src = playlist[songid];
  			this.player.play();
 		}
 	};

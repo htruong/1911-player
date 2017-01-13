@@ -31,13 +31,13 @@
 
 var loa = new LoaPhuong(document.getElementById("player"));
 
-
 function changeBackground() {
     $('#overlord').fadeOut(10000);
 }
 
 function start() {
 	loa.play();
+	loa.player.onended = function() {loa.next()};
 	changeBackground();
 	return false;
 }
