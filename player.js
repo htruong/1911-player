@@ -1,7 +1,7 @@
 function LoaPhuong(player) {
 	this.playlist = [];
 	this.player = player;
-	this.player.addEventListener("ended", this.next, false);
+	this.player.onended = this.next;
 
 
 
